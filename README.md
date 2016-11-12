@@ -1,5 +1,5 @@
 
-[![](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/Civ6-CQUI/Help)
+[![Gitter IRC URL](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/Civ6-CQUI/Help)
 [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/realchaorace)
 
 # Civilization 6 - Chao's Quick UI
@@ -10,7 +10,7 @@
 
 * Civ V Style Cityview
 
-![](http://i.imgur.com/c9mtii6.jpg)
+![](http://i.imgur.com/X5qBzja.jpg)
 
 * Great Person panel renovated (no more scrolling!)
 
@@ -24,21 +24,34 @@
 
 ![](http://i.imgur.com/168ThOx.jpg)
 
+* Production panel elements compressed and reordered
+
+![](http://i.imgur.com/DpZ0kcn.png)
+
 * Map Pinning system enhanced: new pins, long pinlists are now scrollable, right click in pinlist to quickly delete pins, enter key now bound to finalizing a pin in pin creation menu.
 
-![](http://i.imgur.com/IThYZcg.png)
+![](http://i.imgur.com/M11tac6.png)
 
 * Tech/Civic Tree and Civilopedia now autofocus the searchbar
 * Civilopedia remembers the last visited page
 * Civic/Tech popups can be disabled. Optionally, the voiceover can still be kept even without the popup.
+* Civic/Tech notifications spawned at 50%/100% research progress
 * [Minimap can be toggled between 2x-Mode and original by rightclicking](https://gfycat.com/DefinitiveDependableAfricanharrierhawk)
-* Dedicated mod settings menu
+* Dedicated mod settings menu with persistent settings
+
+![](http://i.imgur.com/ePCspFh.png)
+
+* Citizen management icons are overhauled to make seeing yield info easier
+
+![](http://i.imgur.com/gbA4z3s.png)
 
 * Growth/Production progress is enumerated in the city panel
 
 ![](http://i.imgur.com/3kYsEIf.png)
 
-![](http://i.imgur.com/0WFq7EL.png)
+* Improved resource icons are dimmed to emphasize unutilized resources
+
+![](http://i.imgur.com/m32xtQr.png)
 
 * Civ V keybinds implemented. Two modes: Classic, a faithful recreation of the Civ V binding scheme. Enhanced,  Civ V binding scheme with WASD assigned to camera control, Q/E assigned to city/unit cycling, and Shift assigned to shifting focus between city and unit selection modes.
 
@@ -98,7 +111,11 @@
 
 * Shows target and timing of next cultural border growth
 
-![](http://i.imgur.com/PUwoxz3.png)
+![](http://i.imgur.com/0zAy8gF.png)
+
+## Video (Outdated)
+
+[Version v0.5](https://youtu.be/VY1-1DxWmm8) (Credit ZeusMoltar9)
 
 # How to use
 * Download the latest release from
@@ -133,15 +150,29 @@ Contents/Assets/DLC
 
 Please see the [issue tracker](https://github.com/chaorace/cqui/issues) for an up to date list, you can also find help and report bugs at our [Gitter](https://gitter.im/Civ6-CQUI/Help)
 
+### How to contribute
+
+Those looking to contribute to CQUI should visit [the CQUI repo](https://github.com/chaorace/cqui). Those new to using Github should visit the [contributor guide](https://github.com/chaorace/cqui/wiki/How-to-contribute-to-CQUI). ALL new contributors should visit the [style guidelines](https://github.com/chaorace/cqui/wiki/Style-Guideline). All good work is accepted, so long as it falls under the scope of the project and adheres to the styleguide. Contributors are always credited for their work! Those looking for a goal to get started on may want to visit the [issue tracker](https://github.com/chaorace/cqui/issues) for the current list of bugs and feature requests, it's growing every day!
+
 # THANKS:
-* @Vans163 for his QUI mod and the active commits he makes that I love to merge <3
+* @Vans163 for his original QUI mod :heart:
 * astog from the CivFanatics modding community for his [Better Trade Routes mod](http://forums.civfanatics.com/threads/better-trade-screen.602636/)
 * Ace from the CivFanatics modding community for his [Next City Plot mod](http://forums.civfanatics.com/resources/next-city-plot-by-ace.25437/)
 * Divine Yuri from the CivFanatics modding community for his [Custom City Panel mod](http://forums.civfanatics.com/resources/divine-yuris-custom-city-panel.25430/)
-* @zgavin for UI bugfixes in PRs #1 and #2
-* @olegbl for the Amenities overview overhaul in PR #4 and multiple UI bugfixes (PRs #9 and #12)
+* @zgavin for UI bugfixes in #1 and #2
+* @olegbl for the Amenities overview overhaul in #4 and multiple UI bugfixes ( #9 and #12 )
   1. Additional kudos to /u/mateusarc from the Civilization subreddit for his original concept art
-* @jacks0nX for localization in #20 the map pin additions in PR #21 and UI/Civilopedia improvements in #24 and #32
+* @jacks0nX for:
+  *localization in #20
+  *map pin enhancements in PR #21 and #55
+  *UI/Civilopedia improvements in #24 and #32
+  *adding a GP filter to the policy card display in 063d3a668a06b49c9b2394e03cd5deb66b848210
+* @OfekA for providing the improved resource dimming feature in #54
+* @RatchetJ for providing the civic/tech notifications at 50%/100% completion in #66 and 1148edc7ada9a649c15611ef78dbdc690c8adf30
+* @kblease for:
+  *fortify until healed hotkey bugfix in #73
+  *unit purchasing fix in #80
+* @Proustldee for bringing the BTS mod version up to current in #61
 * @perseghini for providing the fix for issue #33
 * /u/dli511 @ Reddit for their bug report relating to purchasing buildings
 * /u/Nitrium @ Reddit for their bug report relating to broken Gossip notifications
