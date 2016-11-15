@@ -105,7 +105,7 @@ local MAX_BEFORE_TRUNC_GOV_TITLE  :number = 165;
 local MAX_BEFORE_TRUNC_TO_BOOST   :number = 385;
 
 -- CQUI CONSTANTS
-local STATUS_MESSAGE_CIVIC          :number = 3;    -- Number to distinguish civic messages
+local CQUI_STATUS_MESSAGE_CIVIC          :number = 3;    -- Number to distinguish civic messages
 
 STATUS_ART[ITEM_STATUS.BLOCKED]   = { Name="BLOCKED",   TextColor0=0xff202726, TextColor1=0x00000000, FillTexture="CivicsTree_GearButtonTile_Disabled.dds",BGU=0,BGV=(SIZE_NODE_Y*3), HideIcon=true,  IsButton=false, BoltOn=false, IconBacking=PIC_METER_BACK };
 STATUS_ART[ITEM_STATUS.READY]   = { Name="READY",   TextColor0=0xaaffffff, TextColor1=0x88000000, FillTexture=nil,                  BGU=0,BGV=0,          HideIcon=true,  IsButton=true,  BoltOn=false, IconBacking=PIC_METER_BACK  };
@@ -160,9 +160,6 @@ local m_shiftDown     :boolean = false;
 
 -- CQUI variables
 local CQUI_halfwayNotified  :table = {};
-local CQUI_chinaHalfway = 0.4;
-local CQUI_halfway = 0.5;
-
 
 -- ===========================================================================
 -- Return string respresenation of a prereq table
@@ -1114,49 +1111,57 @@ end
 function OnLocalPlayerTurnBegin()
   local ePlayer :number = Game.GetLocalPlayer();
   if ePlayer ~= -1 then
-      if m_ePlayer ~= ePlayer then
-        m_ePlayer = ePlayer;
-        m_kCurrentData = GetLivePlayerData( ePlayer, -1 );
-      end
-
-        --------------------------------------------------------------------------
-        -- CQUI Check for Civic Progress
-
-        -- Get the current tech
-        local kPlayer       :table  = Players[ePlayer];
-      local playerCivics      :table  = kPlayer:GetCulture();
-      local currentCivicID  :number = playerCivics:GetProgressingCivic();
-        local isCurrentBoosted  :boolean = playerCivics:HasBoostBeenTriggered(currentCivicsID);
-
-        -- Make sure there is a civic selected before continuing with checks
-        if currentCivicID ~= -1 then
-            local civicName = GameInfo.Civics[currentCivicID].Name;
-
-            local currentCost         = playerCivics:GetCultureCost(currentCivicID);
-          local currentProgress     = playerCivics:GetCulturalProgress(currentCivicID);
-            local currentYield          = playerCivics:GetCultureYield();
-            local percentageToBeDone    = (currentProgress + currentYield) / currentCost;
-            local percentageNextTurn    = (currentProgress + currentYield*2) / currentCost;
-      local halfway:number;
-      if(PlayerConfigurations[Game.GetLocalPlayer()]:GetCivilizationTypeName() == "CIVILIZATION_CHINA") then
-        halfway = CQUI_chinaHalfway;
-      else
-        halfway = CQUI_halfway;
-      end
-        
-            -- Is the current civic completed? -> Could be moved to the "OnCivicComplete" function
-            -- Else is it greater than 50% and has yet to be displayed?
-            if percentageToBeDone >= 1 then
-                LuaEvents.CQUI_AddStatusMessage("The Civic, " .. Locale.Lookup( civicName ) .. ", is completed.", 10, STATUS_MESSAGE_CIVIC);
-            elseif percentageNextTurn >= halfway and isCurrentBoosted == false and CQUI_halfwayNotified[currentCivicID] ~= true then
-                LuaEvents.CQUI_AddStatusMessage("The current Civic, " .. Locale.Lookup( civicName ) .. ", is one turn away from maximum Inspiration potential.", 10, STATUS_MESSAGE_CIVIC);
-                CQUI_halfwayNotified[currentCivicID] = true;
-            end
-        end
-
-        --------------------------------------------------------------------------
-
+    if m_ePlayer ~= ePlayer then
+      m_ePlayer = ePlayer;
+      m_kCurrentData = GetLivePlayerData( ePlayer, -1 );
     end
+
+    --------------------------------------------------------------------------
+    -- CQUI Check for Civic Progress
+
+    -- Get the current tech
+    local kPlayer       :table  = Players[ePlayer];
+    local playerCivics      :table  = kPlayer:GetCulture();
+    local currentCivicID  :number = playerCivics:GetProgressingCivic();
+    local isCurrentBoosted  :boolean = playerCivics:HasBoostBeenTriggered(currentCivicID);
+
+    -- Make sure there is a civic selected before continuing with checks
+    if currentCivicID ~= -1 then
+      local civicName = GameInfo.Civics[currentCivicID].Name;
+      local civicType = GameInfo.Civics[currentCivicID].Type;
+
+      local currentCost         = playerCivics:GetCultureCost(currentCivicID);
+      local currentProgress     = playerCivics:GetCulturalProgress(currentCivicID);
+      local currentYield          = playerCivics:GetCultureYield();
+      local percentageToBeDone    = (currentProgress + currentYield) / currentCost;
+      local percentageNextTurn    = (currentProgress + currentYield*2) / currentCost;
+      local CQUI_halfway:number = .5;
+
+      -- Finds boost amount, always 50 in base game, China's +10% modifier is not applied here
+      for row in GameInfo.Boosts() do
+        if(row.CivicType == civicType) then
+          CQUI_halfway = (100 - row.Boost) / 100;
+          break;
+        end
+      end
+      --If playing as china, apply boost modifier. Not sure where I can query this value...
+      if(PlayerConfigurations[Game.GetLocalPlayer()]:GetCivilizationTypeName() == "CIVILIZATION_CHINA") then
+        CQUI_halfway = CQUI_halfway - .1;
+      end
+
+      -- Is it greater than 50% and has yet to be displayed?
+      if isCurrentBoosted then
+        CQUI_halfwayNotified[civicName] = true;
+      elseif percentageNextTurn >= CQUI_halfway and CQUI_halfwayNotified[civicName] ~= true then
+          LuaEvents.CQUI_AddStatusMessage("The current Civic, " .. Locale.Lookup( civicName ) .. ", is one turn away from maximum Inspiration potential.", 10, CQUI_STATUS_MESSAGE_CIVIC);
+          CQUI_halfwayNotified[civicName] = true;
+      end
+
+    end -- end of if currentCivivID ~= -1
+
+    --------------------------------------------------------------------------
+
+  end -- end of ePlayer ~= -1
 end
 
 -- ===========================================================================
@@ -1193,6 +1198,24 @@ function OnCivicComplete( ePlayer:number, eTech:number)
     if not ContextPtr:IsHidden() then
       View( m_kCurrentData );
     end
+
+    --------------------------------------------------------------------------
+    -- CQUI Civic Complete
+
+    -- Get the current tech
+    local kPlayer       :table  = Players[ePlayer];
+    local currentCivicID  :number = eTech;
+
+    -- Make sure there is a civic selected before continuing with checks
+    if currentCivicID ~= -1 then
+      local civicName = GameInfo.Civics[currentCivicID].Name;
+
+      LuaEvents.CQUI_AddStatusMessage("The Civic, " .. Locale.Lookup( civicName ) .. ", is completed.", 10, CQUI_STATUS_MESSAGE_CIVIC);
+
+    end -- end of if currentCivivID ~= -1
+
+    --------------------------------------------------------------------------
+
   end
 end
 
@@ -1924,6 +1947,9 @@ function Initialize()
   Events.LocalPlayerTurnEnd.Add( OnLocalPlayerTurnEnd );
   Events.LocalPlayerChanged.Add(AllocateUI);
   Events.SystemUpdateUI.Add( OnUpdateUI );
+
+  -- CQUI add exceptions to the 50% notifications by putting civics into the CQUI_halfwayNotified table
+  CQUI_halfwayNotified["LOC_CIVIC_CODE_OF_LAWS_NAME"] = true;
 
 end
 Initialize();
